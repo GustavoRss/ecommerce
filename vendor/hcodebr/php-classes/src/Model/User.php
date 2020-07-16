@@ -153,7 +153,7 @@ class User extends Model{
             
             if (count($results2) === 0)
             {
-                throw new Exception("Não foi possível recuperar a senha");
+                throw new \Exception("Não foi possível recuperar a senha");
                 
             } else {
                 $dataRecovery = $results2[0];

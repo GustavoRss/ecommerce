@@ -101,7 +101,7 @@ class Cart extends Model {
             ':nrdays'=>$this->getnrdays()
         ]);
 
-            $this->setDate($results[0]);
+            $this->setData($results[0]);
         
     }
 
@@ -153,7 +153,7 @@ class Cart extends Model {
         $sql = new Sql();
 
         $rows = $sql->select(
-            "SELECT b.idproduct, b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.desurl COUNT(*) AS nrqtd, SUM(b.vlprice) AS vltotal
+            "SELECT b.idproduct, b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.desurl, COUNT(*) AS nrqtd, SUM(b.vlprice) AS vltotal
         FROM tb_cartsproducts a 
         INNER JOIN tb_products b ON a.idproduct = b.idproduct
         WHERE a.idcart = :idcart AND a.dtremoved IS NULL

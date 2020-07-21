@@ -134,7 +134,7 @@ class User extends Model{
 
         $sql = new Sql();
 
-        $results = $sql -> select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+        $results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
             "iduser"=>$this->getiduser(),
             ":desperson"=>$this->getdesperson(),
             ":deslogin"=>$this->getdeslogin(),
@@ -162,8 +162,7 @@ class User extends Model{
     {
         $sql = new Sql();
 
-        $results = $sql->select("
-        SELECT * FROM tb_persons a
+        $results = $sql->select("SELECT * FROM tb_persons a
         INNER JOIN tb_users b USING(idperson)
         WHERE a.desemail = :email;
         ", array(
@@ -222,8 +221,7 @@ class User extends Model{
 
         $sql = new Sql();
 
-        $results = $sql->select("
-        SELECT * 
+        $results = $sql->select("SELECT * 
         FROM tb_userspasswordrecoveries a 
         INNER JOIN tb_users b USING(iduser)
         INNER JOIN tb_persons c USING(idperson)

@@ -5,6 +5,7 @@ use \Hcode\Model\Product;
 use \Hcode\Model\Category;
 use \Hcode\Model\Cart;
 
+
 $app->get('/', function() {
     
     $products = Product::listAll();
@@ -68,8 +69,59 @@ $app->get("/cart", function(){
 
     $page = new Page();
 
-    $page->setTpl("cart");
-    
+    $page->setTpl("cart", [
+        'cart' => $cart->getValues(),
+        'products'=>$cart->getProducts()
+    ]);
+
+});
+
+$app -> get("/cart/:idproduct/add", function($idproduct){
+
+    $product = new Product();
+
+    $product -> get((int)$idproduct);
+
+    $cart = Cart::getFromSession();
+
+    $cart->addProduct($product);
+
+    header("Location: /cart");
+
+    exit;
+
+});
+
+$app -> get("/cart/:idproduct/minus", function($idproduct){
+
+    $product = new Product();
+
+    $product -> get((int)$idproduct);
+
+    $cart = Cart::getFromSession();
+
+    $cart->removeProduct($product);
+
+    header("Location: /cart");
+
+    exit;
+
+});
+
+$app -> get("/cart/:idproduct/remove", function($idproduct){
+
+    $product = new Product();
+
+    $product -> get((int)$idproduct);
+
+    $cart = Cart::getFromSession();
+
+    $cart->removeProduct($product, true);
+
+    header("Location: /cart");
+
+    exit;
+
 });
 
 ?>

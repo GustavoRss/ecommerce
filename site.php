@@ -50,7 +50,7 @@ $app->get("/categories/:idcategory", function($idcategory){
 
 });
 
-$app->get("/products/:desurl", function($desurl){
+$app->get("/products/:desurl", function($desurl) {
 
     $product = new Product();
 
@@ -66,53 +66,53 @@ $app->get("/products/:desurl", function($desurl){
 
 });
 
-$app->get("/cart", function(){
+$app->get("/cart", function() {
 
-    $cart = Cart::getFromSession();
+	$cart = Cart::getFromSession();
 
-    $page = new Page();
+	$page = new Page();
 
-    $page->setTpl("cart", [
-        'cart' => $cart->getValues(),
-        'products'=>$cart->getProducts(),
-        'error'=>Cart::getMsgError()
-    ]);
-
-});
-
-$app->get("/cart/:idproduct/add", function($idproduct){
-
-    $product = new Product();
-
-    $product -> get((int)$idproduct);
-
-    $cart = Cart::getFromSession();
-
-    $qtd = (isset($_GET['qtd'])) ? (int)$_GET['qtd']:1;
-
-    for($i = 1; $i < $qtd; $i++){
-        $cart->addProduct($product);
-    }
-
-    header("Location: /cart");
-
-    exit;
+	$page->setTpl("cart", [
+		'cart'=>$cart->getValues(),
+		'products'=>$cart->getProducts(),
+		'error'=>Cart::getMsgError()
+	]);
 
 });
 
-$app->get("/cart/:idproduct/minus", function($idproduct){
+$app->get("/cart/:idproduct/add", function($idproduct) {
 
-    $product = new Product();
+	$product = new Product();
 
-    $product -> get((int)$idproduct);
+	$product->get((int)$idproduct);
 
-    $cart = Cart::getFromSession();
+	$cart = Cart::getFromSession();
 
-    $cart->removeProduct($product);
+	$qtd = (isset($_GET['qtd'])) ? (int)$_GET['qtd'] : 1;
 
-    header("Location: /cart");
+	for ($i = 0; $i < $qtd; $i++) {
 
-    exit;
+		$cart->addProduct($product);
+
+	}
+
+	header("Location: /cart");
+	exit;
+
+});
+
+$app->get("/cart/:idproduct/minus", function($idproduct) {
+
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$cart = Cart::getFromSession();
+
+	$cart->removeProduct($product);
+
+	header("Location: /cart");
+	exit;
 
 });
 
@@ -132,13 +132,15 @@ $app->get("/cart/:idproduct/remove", function($idproduct){
 
 });
 
-$app->post("/cart/freight", function(){
+$app->post("/cart/freight", function() {
 
-   $cart = Cart::getFromSession();
-   $cart->setFreight($_POST['zipcode']);
+	$cart = Cart::getFromSession();
 
-   header("Location: /cart");
-    exit;
+	$cart->setFreight($_POST['zipcode']);
+
+	header("Location: /cart");
+	exit;
+
 });
 
 $app->get("/checkout", function(){
@@ -158,15 +160,15 @@ $app->get("/checkout", function(){
 
 });
 
-$app->get("/login", function(){
+$app->get("/login", function() {
 
-    $page = new Page();
+	$page = new Page();
 
-    $page->setTpl("login", [
-        'error'=>User::getError(),
-        'errorRegister'=>User::getErrorRegister(),
-        'registerValues'=>(isset($_SESSION['registerValues'])) ? $_SESSION['registerValues'] : ['name'=>'', 'email'=>'', 'phone'=>'']
-    ]);
+	$page->setTpl("login", [
+		'error'=>User::getError(),
+		'errorRegister'=>User::getErrorRegister(),
+		'registerValues'=>(isset($_SESSION['registerValues'])) ? $_SESSION['registerValues'] : ['name'=>'', 'email'=>'', 'phone'=>'']
+	]);
 
 });
 
@@ -252,5 +254,65 @@ $app->post("/register", function() {
 	exit;
 
 });
+
+$app->get("/forgot", function(){
+
+	$page = new Page();
+
+	$page->setTpl("forgot");
+});
+
+$app->post("/forgot", function(){
+
+	
+	$user = User::getForgot($_POST["email"], false);
+
+	header("Location: /forgot/sent");
+	exit;
+
+});
+
+$app->get("/forgot/sent", function(){
+
+	$page = new Page();
+
+	$page->setTpl("forgot-sent");
+});
+
+$app->get("/forgot/reset", function(){
+
+	$user = User::validForgotDecrypt($_GET["code"]);
+
+	$page = new Page();
+
+	$page->setTpl("forgot-reset", array(
+		"name"=>$user["desperson"],
+		"code"=>$_GET["code"]
+	));
+
+});
+
+$app->post("/forgot/reset", function(){
+
+	$forgot = User::validForgotDecrypt($_POST["code"]);
+
+	User::setForgotUsed($forgot["idrecovery"]);
+
+	$user = new User();
+
+	$user->get((int)$forgot["iduser"]);
+
+	$password = password_hash($_POST["password"], PASSWORD_DEFAULT, [
+		"cost"=>12
+	]);
+
+	$user->setPassword($password);
+
+	$page = new Page();
+
+	$page->setTpl("forgot-reset-success");
+
+});
+
 
 ?>

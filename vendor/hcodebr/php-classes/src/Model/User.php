@@ -58,7 +58,8 @@ class User extends Model{
     public static function login($login, $password)
     {
         $sql = new Sql();
-        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b ON a.idperson = b.idperson
+        WHERE a.deslogin = :LOGIN", array(
             ":LOGIN"=>$login
         ));
 
@@ -114,9 +115,10 @@ class User extends Model{
     {
         $sql = new Sql();
 
-        $results = $sql -> select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
-            ":desperson"=>$this->getdesperson(),
-            ":deslogin"=>$this->getdeslogin(),
+        $results = $sql -> select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)
+        ", array(
+            ":desperson"=>utf8_decode($this->getdesperson()),
+            ":deslogin"=>utf8_decode($this->getdeslogin()),
             ":despassword"=>User::getPasswordHash($this->getdespassword()),
             ":desemail"=>$this->getdesemail(),
             ":nrphone"=>$this->getnrphone(),
@@ -296,6 +298,26 @@ class User extends Model{
     public static function clearError() {
 
         $_SESSION[User::ERROR] = NULL;
+
+    }
+    public static function setSuccess($msg)
+    {
+        $_SESSION[User::SUCCESS] = $msg;
+    }
+
+    public static function getSuccess() {
+
+        $msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+
+        User::clearSuccess();
+
+        return $msg;
+
+    }
+
+    public static function clearSuccess() {
+
+        $_SESSION[User::SUCCESS] = NULL;
 
     }
 

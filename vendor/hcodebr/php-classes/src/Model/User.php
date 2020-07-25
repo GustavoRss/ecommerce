@@ -13,6 +13,7 @@ class User extends Model{
     const SECRET_IV = "HcodePhp7_Secret_IV";
     const ERROR = "UserError";
     const ERROR_REGISTER = "UserErrorRegister";
+    const SUCCESS = "UserSuccess";
 
     public static function getFromSession()
     {
@@ -71,8 +72,6 @@ class User extends Model{
         if(password_verify($password, $data["despassword"]) === true)
         {
             $user = new User();
-
-            $data['desperson'] = utf8_encode($data['desperson']);
 
             $user->setData($data);
 
@@ -138,8 +137,6 @@ class User extends Model{
         ));
 
         $data = $results[0];
-
-        $data['desperson'] = utf8_encode($data['desperson']);
 
         $this->setData($data);
     }
@@ -261,65 +258,61 @@ class User extends Model{
         }        
     }
 
-    public static function setForgotUsed($idrecovery)
-    {
+    public static function setForgotUsed($idrecovery) {
 
         $sql = new Sql();
 
-        $sql -> query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
+        $sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
             ":idrecovery"=>$idrecovery
         ));
 
-
     }
 
-    public function setPassword($password)
-    {
+    public function setPassword($password) {
+
         $sql = new Sql();
 
-        $sql -> query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
-
-            ":password" => $password,
-            ":iduser" => $this->getiduser()
-
+        $sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+            ":password"=>$password,
+            ":iduser"=>$this->getiduser()
         ));
-    }
 
+    }
     public static function setError($msg)
     {
         $_SESSION[User::ERROR] = $msg;
     }
 
-    public static function getError()
-    {
+    public static function getError() {
+
         $msg = (isset($_SESSION[User::ERROR]) && $_SESSION[User::ERROR]) ? $_SESSION[User::ERROR] : '';
 
         User::clearError();
 
         return $msg;
-    }
-
-    public static function clearError()
-    {
-
-        $_SESSION[User::ERROR_REGISTER] = NULL;
 
     }
 
-    public static function setErrorRegister($msg)
-    {
+    public static function clearError() {
+
+        $_SESSION[User::ERROR] = NULL;
+
+    }
+
+    public static function setErrorRegister($msg) {
 
         $_SESSION[User::ERROR_REGISTER] = $msg;
 
     }
 
-    public static function getErrorRegister()
-    {
+    public static function getErrorRegister() {
+
         $msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
 
         User::clearErrorRegister();
 
         return $msg;
+
     }
 
     public static function clearErrorRegister()
@@ -329,26 +322,21 @@ class User extends Model{
 
     }
 
-    public static function checkLoginExist($login)
-    {
+    public static function checkLoginExists($login) {
 
         $sql = new Sql();
 
-        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin",[
-            ':deslogin' => $login
+        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+            'deslogin'=>$login
         ]);
 
         return (count($results) > 0);
 
     }
-
-    public static function getPasswordHash($password)
-    {
+    public static function getPasswordHash($password) {
 
         return password_hash($password, PASSWORD_DEFAULT, [
-
-            'cost' => 12
-
+            'cost'=>12
         ]);
 
     }

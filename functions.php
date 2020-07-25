@@ -2,7 +2,7 @@
 
 use \Hcode\Model\User;
 
-function formatPrice(float $vlprice)
+function formatPrice($vlprice)
 {
     return number_format($vlprice, 2, ",", ".");
 }
@@ -14,8 +14,7 @@ function checkLogin($inadmin = true)
 
 }
 
-function getUserName()
-{
+function getUserName(){
 
     $user = User::getFromSession();
 

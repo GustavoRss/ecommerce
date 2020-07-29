@@ -236,28 +236,30 @@ class User extends Model{
         $sql = new Sql();
 
         $results = $sql->select("SELECT * 
-        FROM tb_userspasswordrecoveries a 
-        INNER JOIN tb_users b USING(iduser)
-        INNER JOIN tb_persons c USING(idperson)
-        WHERE      
-            a.idrecovery = :idrecovery
-            AND
-            a.dtrecovery IS NULL
-            AND
-            DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
+            FROM tb_userspasswordsrecoveries a
+            INNER JOIN tb_users b USING(iduser)
+            INNER JOIN tb_persons c USING(idperson)
+            WHERE 
+                a.idrecovery = :idrecovery
+                AND
+                a.dtrecovery IS NULL
+                AND
+                DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
         ", array(
-            ":idrecovery" => $idrecovery
+            ":idrecovery"=>$idrecovery
         ));
-        
-        if (count($results) === 0){
-            throw new \Exception("Não foi possível recuperar a senha");
-            
-        } 
-        else
-        {   
+
+
+        if (count($results) === 0) {
+
+            throw new \Exception("Não foi possível recuperar a senha.");
+
+        } else {
+
             return $results[0];
 
-        }        
+        }
+
     }
 
     public static function setForgotUsed($idrecovery) {
